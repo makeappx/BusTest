@@ -107,12 +107,12 @@ namespace BusTest
             foreach (var x in list)
             {
                 var tmp = Graph.Vertices.FirstOrDefault(y => y.Name == stop);
-                if (tmp is not null && tmp.Edges.Any(y => x.Stops.Contains(y.ConnectedVertex.Name)))
-                    return;
                 List<int> temptime = new();
                 foreach (var s in x.Stops)
                 {
                     int tm = x.GetTime(time, stop, s);
+                    if (tmp is not null && tmp.Edges.Any(y => y.ConnectedVertex.Name == s))
+                        tm = -1;
                     temptime.Add(tm);
                     if (s != stop && tm != -1)
                         Graph.AddEdge(stop, s, x.Price);
@@ -120,7 +120,7 @@ namespace BusTest
                 for (int i = 0; i < x.Stops.Length; i++)
                 {
                     if (x.Stops[i] != stop && temptime[i] != -1)
-                        AddMoneyEdge(x.Stops[i], temptime[i]);
+                        AddMoneyEdge(x.Stops[i], time + temptime[i]);
                 }
             }
         }
