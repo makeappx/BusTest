@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BusTest
@@ -61,7 +57,6 @@ namespace BusTest
         private void button2_Click(object sender, EventArgs e)
         {
             if (Buses.Count == 0) return;
-
             Graph = new();
             DateTime tmp = DateTime.ParseExact(TimeTB.Text, "HH:mm", null);
             int StartTime = tmp.Hour * 60 + tmp.Minute;
@@ -96,11 +91,12 @@ namespace BusTest
             {
                 int nextstop = x.GetNextStop(stop);
                 var tmp = Graph.Vertices.FirstOrDefault(y => y.Name == stop);
-                if (tmp is not null && tmp.Edges.Any(y => y.ConnectedVertex.Name == nextstop))
-                    return;
 
                 int nexttime = x.GetTime(time, stop, nextstop);
                 if (nexttime == -1) continue;
+                if (tmp is not null 
+                 && tmp.Edges.Any(y => (y.ConnectedVertex.Name == nextstop) && (y.EdgeWeight <= nexttime)))
+                    return;
                 Graph.AddEdge(stop, nextstop, nexttime);
                 AddTimeEdge(nextstop, time + nexttime);
             }
